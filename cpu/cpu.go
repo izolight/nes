@@ -46,6 +46,13 @@ func (c *CPU) read(addr uint16) uint8 {
 	return c.bus.Read(addr)
 }
 
+// readPC is a convenience function for reading from the program counter.
+func (c *CPU) readPC() uint8 {
+	addr := c.bus.Read(c.programCounter)
+	c.programCounter++
+	return addr
+}
+
 func (c *CPU) write(addr uint16, data uint8) {
 	c.bus.Write(addr, data)
 }
@@ -73,4 +80,9 @@ func (c *CPU) Clock() {
 		c.remainingCycles = instruction.cycles
 	}
 	c.remainingCycles--
+}
+
+// addr16 constructs the uint16 addr from the low and high bytes.
+func addr16(lo uint8, hi uint8) uint16 {
+	return uint16(hi)<<8 | uint16(lo)
 }
