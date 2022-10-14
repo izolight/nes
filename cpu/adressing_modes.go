@@ -73,6 +73,34 @@ func Relative(c *CPU) {
 }
 
 // indexed indirect addressing x
+func IndirectX(c *CPU) {
+	addr := uint16(c.read(c.programCounter))
+	c.programCounter++
+	lo := uint16(c.read((addr + uint16(c.regX)) & 0x00FF))
+	hi := uint16(c.read((addr + uint16(c.regX) + 1) & 0x00FF))
+	c.addr_absolute = hi<<8 | lo
+}
+
+// indirect indexed addressing y
+func IndirectY(c *CPU) {
+	addr := uint16(c.read(c.programCounter))
+	c.programCounter++
+	lo := uint16(c.read(addr & 0x00FF))
+	hi := uint16(c.read((addr + 1) & 0x00FF))
+	c.addr_absolute = (hi<<8 | lo) + uint16(c.regY)
+}
+
+// absolut indrect addressing
+func Indirect(c *CPU) {
+	plo := uint16(c.read(c.programCounter))
+	c.programCounter++
+	phi := uint16(c.read(c.programCounter))
+	c.programCounter++
+	addr := phi<<8 | plo
+	lo := uint16(c.read(addr))
+	hi := uint16(c.read(addr + 1))
+	c.addr_absolute = hi<<8 | lo
+}
 
 func absoluteIndexedIndirect(c *CPU) {
 	lo := uint16(c.read(c.programCounter))
