@@ -3,7 +3,15 @@ package cpu
 type OpcodeFunc func(c *CPU)
 
 func ADC(c *CPU) {}
-func AND(c *CPU) {}
+func AND(c *CPU) {
+	c.accumulator = c.accumulator & c.read(c.addr_absolute)
+	if c.accumulator == 0x00 {
+		c.setFlag(zero, true)
+	}
+	if c.accumulator&0x80 == 0x80 {
+		c.setFlag(negative, true)
+	}
+}
 func ASL(c *CPU) {}
 func BCC(c *CPU) {}
 func BCS(c *CPU) {}
