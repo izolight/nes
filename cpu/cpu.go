@@ -14,8 +14,8 @@ type CPU struct {
 type instruction struct {
 	name      string
 	cycles    uint
-	addrMode  func(c *CPU)
-	operation func(c *CPU)
+	addrMode  AddressModeFunc
+	operation OpcodeFunc
 }
 
 type registers struct {
@@ -77,7 +77,8 @@ func (c *CPU) Clock() {
 		instruction := c.opcodes[c.instructionReg]
 		instruction.addrMode(c)
 		instruction.operation(c)
-		c.remainingCycles = instruction.cycles
+		cycles := instruction.cycles
+		c.remainingCycles = cycles
 	}
 	c.remainingCycles--
 }

@@ -1,5 +1,7 @@
 package cpu
 
+type AddressModeFunc func(c *CPU)
+
 // Accumulator addressing
 func Accum(c *CPU) {
 	c.fetched = c.accumulator
