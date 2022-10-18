@@ -198,7 +198,16 @@ func INY(c *CPU) {
 func JMP(c *CPU) {
 	c.programCounter = c.addr_absolute
 }
-func JSR(c *CPU) {}
+
+// JSR pushes the pc(-1) on the stack and sets the pc to the new address,
+func JSR(c *CPU) {
+	c.programCounter--
+	hi := uint8((c.programCounter >> 8) & 0x00FF)
+	lo := uint8(c.programCounter & 0x00FF)
+	c.push(hi)
+	c.push(lo)
+	c.programCounter = c.addr_absolute
+}
 
 // LDA loads the data at memory location into the accumulator
 func LDA(c *CPU) {
@@ -272,7 +281,14 @@ func PLP(c *CPU) {
 func ROL(c *CPU) {}
 func ROR(c *CPU) {}
 func RTI(c *CPU) {}
-func RTS(c *CPU) {}
+
+// RTS pulls the program counter(-1) from th stack
+func RTS(c *CPU) {
+	lo := c.pull()
+	hi := c.pull()
+	c.programCounter = addr16(lo, hi)
+	c.programCounter++
+}
 func SBC(c *CPU) {}
 
 // SEC sets the carry flag to 1
