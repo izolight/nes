@@ -321,28 +321,42 @@ func STY(c *CPU) {
 	c.write(c.addr_absolute, c.regY)
 }
 
-// TAX copies the content of the X register to the accumulator
+// TAX copies the content of the accumulator into the X register
 func TAX(c *CPU) {
-	c.accumulator = c.regX
-	if c.accumulator == 0x00 {
-		c.setFlag(zeroFlag, true)
-	}
-	if c.accumulator&0x80 == 0x80 {
-		c.setFlag(negativeFlag, true)
-	}
+	c.regX = c.accumulator
+	c.setFlag(zeroFlag, c.regX == 0x00)
+	c.setFlag(negativeFlag, c.regX&0x80 == 0x80)
 }
 
-// TAY copies the content of the Y register to the accumulator
+// TAY copies the content of the accumualtor into the Y register
 func TAY(c *CPU) {
-	c.accumulator = c.regY
-	if c.accumulator == 0x00 {
-		c.setFlag(zeroFlag, true)
-	}
-	if c.accumulator&0x80 == 0x80 {
-		c.setFlag(negativeFlag, true)
-	}
+	c.regY = c.accumulator
+	c.setFlag(zeroFlag, c.regY == 0x00)
+	c.setFlag(negativeFlag, c.regY&0x80 == 0x80)
 }
-func TSX(c *CPU) {}
-func TXA(c *CPU) {}
-func TXS(c *CPU) {}
-func TYA(c *CPU) {}
+
+// TSX copies the contents of the stack pointer into the X register
+func TSX(c *CPU) {
+	c.regX = c.stackPointer
+	c.setFlag(zeroFlag, c.regX == 0x00)
+	c.setFlag(negativeFlag, c.regX&0x80 == 0x80)
+}
+
+// TXA copies the contents of the X register into the accumulator
+func TXA(c *CPU) {
+	c.accumulator = c.regX
+	c.setFlag(zeroFlag, c.accumulator == 0x00)
+	c.setFlag(negativeFlag, c.accumulator&0x80 == 0x80)
+}
+
+// TXS copies the contents of the X register into the stack register
+func TXS(c *CPU) {
+	c.stackPointer = c.regX
+}
+
+// TYA copies the contents of the Y register into the accumulator
+func TYA(c *CPU) {
+	c.accumulator = c.regY
+	c.setFlag(zeroFlag, c.accumulator == 0x00)
+	c.setFlag(negativeFlag, c.accumulator&0x80 == 0x80)
+}
