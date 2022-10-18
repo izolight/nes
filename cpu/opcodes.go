@@ -130,19 +130,34 @@ func CMP(c *CPU) {
 }
 func CPX(c *CPU) {}
 func CPY(c *CPU) {}
-func DEC(c *CPU) {}
-func DEX(c *CPU) {}
-func DEY(c *CPU) {}
+
+// DEC substracts one from the data at the memory location
+func DEC(c *CPU) {
+	data := c.read(c.addr_absolute) - 1
+	c.setFlag(zeroFlag, data == 0x00)
+	c.setFlag(negativeFlag, data&0x80 == 0x80)
+	c.write(c.addr_absolute, data)
+}
+
+// DEX decrements the value in the X register
+func DEX(c *CPU) {
+	c.regX = c.regX - 1
+	c.setFlag(zeroFlag, c.regX == 0x00)
+	c.setFlag(negativeFlag, c.regX&0x80 == 0x80)
+}
+
+// DEY decrements the value in the Y register
+func DEY(c *CPU) {
+	c.regY = c.regY - 1
+	c.setFlag(zeroFlag, c.regY == 0x00)
+	c.setFlag(negativeFlag, c.regY&0x80 == 0x80)
+}
 
 // EOR performs an exclusive OR of accumulator and data at memory location
 func EOR(c *CPU) {
 	c.accumulator = c.accumulator ^ c.read(c.addr_absolute)
-	if c.accumulator == 0x00 {
-		c.setFlag(zeroFlag, true)
-	}
-	if c.accumulator&0x80 == 0x80 {
-		c.setFlag(negativeFlag, true)
-	}
+	c.setFlag(zeroFlag, c.accumulator == 0x00)
+	c.setFlag(negativeFlag, c.accumulator&0x80 == 0x80)
 }
 
 // INC adds one to the data at memory location
@@ -181,6 +196,7 @@ func INY(c *CPU) {
 
 // JMP sets the program counter to the address at the operand
 func JMP(c *CPU) {
+	c.programCounter = c.addr_absolute
 }
 func JSR(c *CPU) {}
 
@@ -217,6 +233,8 @@ func LDY(c *CPU) {
 	}
 }
 func LSR(c *CPU) {}
+
+// NOP does nothing (just incrementing pc)
 func NOP(c *CPU) {}
 
 // ORA performs an OR of the data at the accumulator and memory location
@@ -229,10 +247,28 @@ func ORA(c *CPU) {
 		c.setFlag(negativeFlag, true)
 	}
 }
-func PHA(c *CPU) {}
-func PHP(c *CPU) {}
-func PLA(c *CPU) {}
-func PLP(c *CPU) {}
+
+// PHA pushes a copy of the accumulator on the stack
+func PHA(c *CPU) {
+	c.push(c.accumulator)
+}
+
+// PHP pushes a copy of the status flags to the stack
+func PHP(c *CPU) {
+	c.push(c.statusReg)
+}
+
+// PLA pulls the stack value into the accumulator
+func PLA(c *CPU) {
+	c.accumulator = c.pull()
+	c.setFlag(zeroFlag, c.accumulator == 0x00)
+	c.setFlag(negativeFlag, c.accumulator&0x80 == 0x80)
+}
+
+// PLP pulls the stack value into the status flags
+func PLP(c *CPU) {
+	c.statusReg = c.pull()
+}
 func ROL(c *CPU) {}
 func ROR(c *CPU) {}
 func RTI(c *CPU) {}
