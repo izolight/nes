@@ -60,14 +60,14 @@ func (c *CPU) write(addr uint16, data uint8) {
 type flag uint8
 
 const (
-	carry flag = 1 << iota
-	zero
-	irq_disable
-	decimal_mode
-	brk_command
-	unused
-	overflow
-	negative
+	carryFlag flag = 1 << iota
+	zeroFlag
+	irqDisableFlag
+	decimalModeFlag
+	brkCommandFlag
+	unusedFlag
+	overflowFlag
+	negativeFlag
 )
 
 func (c *CPU) Clock() {
@@ -77,8 +77,7 @@ func (c *CPU) Clock() {
 		instruction := c.opcodes[c.instructionReg]
 		instruction.addrMode(c)
 		instruction.operation(c)
-		cycles := instruction.cycles
-		c.remainingCycles = cycles
+		c.remainingCycles += instruction.cycles
 	}
 	c.remainingCycles--
 }
