@@ -278,8 +278,30 @@ func PLA(c *CPU) {
 func PLP(c *CPU) {
 	c.statusReg = c.pull()
 }
-func ROL(c *CPU) {}
-func ROR(c *CPU) {}
+
+// ROL rotates the bits one place to the left and puts the old bit 7 into the carry flag and the old carry flag into bit 0
+func ROL(c *CPU) {
+	data := c.read(c.addr_absolute)
+	carry := c.getFlag(carryFlag)
+	c.setFlag(carryFlag, data&0x80 == 0x80)
+	data = data << 1
+	data = (data & 0xFE) | carry
+	c.setFlag(zeroFlag, data == 0x00)
+	c.setFlag(negativeFlag, data&0x80 == 0x80)
+	c.write(c.addr_absolute, data)
+}
+
+// ROR rotates  the bits one place to the right and puts the old bit 0 into the carry flag and the old carry flag into bit 7
+func ROR(c *CPU) {
+	data := c.read(c.addr_absolute)
+	carry := c.getFlag(carryFlag)
+	c.setFlag(carryFlag, data&1 == 1)
+	data = data >> 1
+	data = (data & 0x7F) | (carry << 7)
+	c.setFlag(zeroFlag, data == 0x00)
+	c.setFlag(negativeFlag, data&0x80 == 0x80)
+	c.write(c.addr_absolute, data)
+}
 func RTI(c *CPU) {}
 
 // RTS pulls the program counter(-1) from th stack
