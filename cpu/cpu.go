@@ -90,20 +90,19 @@ func addr16(lo uint8, hi uint8) uint16 {
 const (
 	stackStart = 0x0100
 	stackEnd   = 0x01FF
+	stackInit  = 0xFF
 )
-
-// TODO use descending stack
 
 // push pushes data onto the stack
 func (c *CPU) push(data uint8) {
 	stackAddr := stackStart | uint16(c.stackPointer)
 	c.write(stackAddr, data)
-	c.stackPointer++
+	c.stackPointer--
 }
 
 // pull pulls data from the stack
 func (c *CPU) pull() uint8 {
-	c.stackPointer--
+	c.stackPointer++
 	stackAddr := stackStart | uint16(c.stackPointer)
 	data := c.read(stackAddr)
 	return data
