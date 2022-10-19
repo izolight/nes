@@ -87,17 +87,24 @@ func addr16(lo uint8, hi uint8) uint16 {
 	return uint16(hi)<<8 | uint16(lo)
 }
 
+const (
+	stackStart = 0x0100
+	stackEnd   = 0x01FF
+)
+
+// TODO use descending stack
+
 // push pushes data onto the stack
 func (c *CPU) push(data uint8) {
-	stackAddr := 0x0100 | uint16(c.stackPointer)
+	stackAddr := stackStart | uint16(c.stackPointer)
 	c.write(stackAddr, data)
 	c.stackPointer++
 }
 
 // pull pulls data from the stack
 func (c *CPU) pull() uint8 {
-	stackAddr := 0x0100 | uint16(c.stackPointer)
+	c.stackPointer--
+	stackAddr := stackStart | uint16(c.stackPointer)
 	data := c.read(stackAddr)
-	stackAddr--
 	return data
 }
