@@ -2,6 +2,19 @@ package cpu
 
 type OpcodeFunc func(c *CPU)
 
+const (
+	zero       uint8 = 0x00
+	lastBitSet uint8 = 0x80
+)
+
+func isZero(data uint8) bool {
+	return data == zero
+}
+
+func isNegative(data uint8) bool {
+	return data&lastBitSet == lastBitSet
+}
+
 // ADC performs add with carry of the accumulator and data at memory location
 func ADC(c *CPU) {
 	result := uint16(c.accumulator) + uint16(c.read(c.addr_absolute)) + uint16(c.getFlag(carryFlag))
